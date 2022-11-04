@@ -15,7 +15,7 @@ def pil_loader(path):
 
 
 class Caltech(VisionDataset):
-    def __init__(self, root, split='train', transform=None, target_transform=None):
+    def __init__(self, root, split='train', transform=None, target_transform=None, path_prefix=""):
         super(Caltech, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.split = split # This defines the split you are going to use
@@ -32,7 +32,7 @@ class Caltech(VisionDataset):
         background_folder = "BACKGROUND_Google"
         label = 0
         if self.split == "train" or self.split == "test":
-            with open(self.split + ".txt", "r") as fp:
+            with open(path_prefix + self.split + ".txt", "r") as fp:
                 lines = fp.readlines()
                 previous_label_name = lines[0].split("/")[0] # get first label name
                 for line in lines:
@@ -41,7 +41,7 @@ class Caltech(VisionDataset):
                         label_name = line.split("/")[0]
                         if label_name != previous_label_name:
                             label += 1
-                        image = pil_loader(line)
+                        image = pil_loader(path_prefix + line)
                         self.dataset.append((image, label))
                         previous_label_name = label_name
 
