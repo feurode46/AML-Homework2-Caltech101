@@ -20,7 +20,6 @@ class Caltech(VisionDataset):
 
         self.split = split # This defines the split you are going to use
                            # (split files are called 'train.txt' and 'test.txt')
-
         '''
         - Here you should implement the logic for reading the splits files and accessing elements
         - If the RAM size allows it, it is faster to store all data in memory
@@ -29,6 +28,22 @@ class Caltech(VisionDataset):
           through the index
         - Labels should start from 0, so for Caltech you will have lables 0...100 (excluding the background class) 
         '''
+        self.dataset = list()
+        background_folder = "BACKGROUND_Google"
+        label = 0
+        if self.split == "train" or self.split == "test":
+            with open(self.split + ".txt", "r") as fp:
+                lines = fp.readlines()
+                previous_label_name = lines[0].split("/")[0] # get first label name
+                for line in lines:
+                    if not line.find(background_folder):
+                        # add tuple (PIL, label) to dataset
+                        label_name = line.split("/")[0]
+                        if label_name != previous_label_name:
+                            label += 1
+                        image = pil_loader(line)
+                        self.dataset.append((image, label))
+                        previous_label_name = label_name
 
     def __getitem__(self, index):
         '''
@@ -40,9 +55,9 @@ class Caltech(VisionDataset):
             tuple: (sample, target) where target is class_index of the target class.
         '''
 
-        image, label = ... # Provide a way to access image and label via index
-                           # Image should be a PIL Image
-                           # label can be int
+        image, label = self.dataset[index] # Provide a way to access image and label via index
+                                           # Image should be a PIL Image
+                                           # label can be int
 
         # Applies preprocessing when accessing the image
         if self.transform is not None:
@@ -55,5 +70,5 @@ class Caltech(VisionDataset):
         The __len__ method returns the length of the dataset
         It is mandatory, as this is used by several other components
         '''
-        length = ... # Provide a way to get the length (number of elements) of the dataset
+        length = len(self.dataset) # Provide a way to get the length (number of elements) of the dataset
         return length
