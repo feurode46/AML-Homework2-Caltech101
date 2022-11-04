@@ -31,7 +31,7 @@ class Caltech(VisionDataset):
         self.dataset = list()
         background_folder = "BACKGROUND_Google"
         label = 0
-        if self.split == "train" or self.split == "test":
+        if self.split.find("train") or self.split.find("test"):
             with open(path_prefix + self.split + ".txt", "r") as fp:
                 lines = fp.readlines()
                 previous_label_name = lines[0].split("/")[0] # get first label name
